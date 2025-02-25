@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-node-app-service
+spec:
+  selector:
+    app: my-node-app  # Matches the label in the deployment
+  ports:
+  - protocol: TCP
+    port: 80  # Port exposed by the service
+    targetPort: 3000  # Port your app listens on
+  type: LoadBalancer  # Exposes the service externally (cloud providers only)
+  

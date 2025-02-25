@@ -1,0 +1,66 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: my-node-app
+# spec:
+#   replicas: 3  # Number of replicas (pods) to run
+#   selector:
+#     matchLabels:
+#       app: my-node-app
+#   template:
+#     metadata:
+#       labels:
+#         app: my-node-app
+#     spec:
+#       containers:
+#       - name: my-node-app
+#         image: boualem775/firstimg:latest  # Use your Docker image
+#         ports:
+#         - containerPort: 3000  # Port your app listens on
+#         env:
+#         - name: NODE_ENV
+#           value: "production"
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: firstimg
+    version: "1.0"
+  name: firstimg
+spec:
+  replicas: 1  # Set the number of replicas
+  selector:
+    matchLabels:
+      app: firstimg
+  template:
+    metadata:
+      labels:
+        app: firstimg
+    spec:
+      containers:
+        - name: firstimg
+          image: boualem775/firstimg:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          resources: {}
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: firstimg
+  name: firstimg
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8080
+      name: http
+  selector:
+    app: firstimg
+  type: NodePort  

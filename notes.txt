@@ -1,0 +1,16 @@
+to create deployment 
+ kubectl apply -f deployment.yaml
+***************************************************
+to connect to the app externaly 
+    -first lunch **minikube tunnel** in a terminal 
+    - lunch **kubectl get services** in another terminal and get the external ip of the deployment
+**********************************************
+kubectl get services firstimg : to get the port of theg external access 
+minikube ip : 192.168.49.2
+the final link is 192.168.49.2:31221
+
+*********************db user*************
+kbhamroune
+0H9t32CHMQQTA91a
+
+
