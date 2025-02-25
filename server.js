@@ -22,24 +22,6 @@ mongoose.connect(process.env.MONGO_URI, {
 // Routes
 app.get('/', (req, res) => res.send('Welcome to the Express & MongoDB App!'));
 
-// Create a new car
-// app.post('/cars', async (req, res) => {
-//     try {
-//         const { make, model, year, color, fuelType, transmission, seats, doors, price, status } = req.body;
-
-//         // Validate status
-//         const validStatuses = ["available", "sold", "reserved"];
-//         if (!validStatuses.includes(status.toLowerCase())) {
-//             return res.status(400).json({ error: "Invalid status. Allowed values: available, sold, reserved." });
-//         }
-
-//         const car = new Car({ make, model, year, color, fuelType, transmission, seats, doors, price, status });
-//         await car.save();
-//         res.status(201).json(car);
-//     } catch (error) {
-//         res.status(400).json({ error: error.message });
-//     }
-// });
 
 // Upload Image Route
 app.post('/upload', upload.single('image'), (req, res) => {
