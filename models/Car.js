@@ -11,9 +11,8 @@ const carSchema = new mongoose.Schema({
     doors: { type: Number, required: true },
     price: { type: Number, required: true },
     status: { type: String, required: true },
-
+    images: [{ type: String }] 
 });
 
 const Car = mongoose.model('Car', carSchema);
-
 module.exports = Car;

@@ -1,14 +1,18 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const { upload } = require('./config/cloudinary');
 const Car = require('./models/Car');
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Enable CORS for all routes
+app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB Atlas
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -19,23 +23,68 @@ mongoose.connect(process.env.MONGO_URI, {
 app.get('/', (req, res) => res.send('Welcome to the Express & MongoDB App!'));
 
 // Create a new car
-app.post('/cars', async (req, res) => {
+// app.post('/cars', async (req, res) => {
+//     try {
+//         const { make, model, year, color, fuelType, transmission, seats, doors, price, status } = req.body;
+
+//         // Validate status
+//         const validStatuses = ["available", "sold", "reserved"];
+//         if (!validStatuses.includes(status.toLowerCase())) {
+//             return res.status(400).json({ error: "Invalid status. Allowed values: available, sold, reserved." });
+//         }
+
+//         const car = new Car({ make, model, year, color, fuelType, transmission, seats, doors, price, status });
+//         await car.save();
+//         res.status(201).json(car);
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// });
+
+// Upload Image Route
+app.post('/upload', upload.single('image'), (req, res) => {
     try {
-        const { make, model, year, color, fuelType, transmission, seats, doors, price, status } = req.body;
-
-        // Validate status
-        const validStatuses = ["available", "sold", "reserved"];
-        if (!validStatuses.includes(status.toLowerCase())) {
-            return res.status(400).json({ error: "Invalid status. Allowed values: available, sold, reserved." });
-        }
-
-        const car = new Car({ make, model, year, color, fuelType, transmission, seats, doors, price, status });
-        await car.save();
-        res.status(201).json(car);
+        res.json({ imageUrl: req.file.path });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ error: 'Failed to upload image' });
     }
 });
+
+// Create a New Car with Image URLs
+app.post('/cars', upload.single('image'), async (req, res) => {
+    try {
+      const { make, model, year, color, fuelType, transmission, seats, doors, price, status } = req.body;
+  
+      const validStatuses = ["available", "rented"];
+      if (!validStatuses.includes(status.toLowerCase())) {
+        return res.status(400).json({ error: "Invalid status. Allowed values: available, sold, reserved." });
+      }
+  
+      // Add Cloudinary image URL to the car data
+      const imageUrl = req.file ? req.file.path : null;
+  
+      const car = new Car({
+        make,
+        model,
+        year,
+        color,
+        fuelType,
+        transmission,
+        seats,
+        doors,
+        price,
+        status,
+        images: imageUrl ? [imageUrl] : [],  // Store image URL in an array
+      });
+  
+      await car.save();
+      res.status(201).json(car);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+  
+
 
 // Get all cars
 app.get('/cars', async (req, res) => {
