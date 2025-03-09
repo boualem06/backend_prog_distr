@@ -23,6 +23,50 @@
 
 
 
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   labels:
+#     app: serviceadmin
+#     version: "1.0"
+#   name: serviceadmin
+# spec:
+#   replicas: 1  # Set the number of replicas
+#   selector:
+#     matchLabels:
+#       app: serviceadmin
+#   template:
+#     metadata:
+#       labels:
+#         app: serviceadmin
+#     spec:
+#       containers:
+#         - name: serviceadmin
+#           image: boualem775/serviceadmin:v1
+#           imagePullPolicy: Always
+#           ports:
+#             - containerPort: 8080
+#           resources: {}
+#       restartPolicy: Always
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   labels:
+#     app: serviceadmin
+#   name: serviceadmin
+# spec:
+#   ports:
+#     - port: 80
+#       protocol: TCP
+#       targetPort: 8080
+#       name: http
+#   selector:
+#     app: serviceadmin
+#   type: NodePort  
+
+
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -31,7 +75,7 @@ metadata:
     version: "1.0"
   name: serviceadmin
 spec:
-  replicas: 1  # Set the number of replicas
+  replicas: 1
   selector:
     matchLabels:
       app: serviceadmin
@@ -42,10 +86,34 @@ spec:
     spec:
       containers:
         - name: serviceadmin
-          image: boualem775/service_admin:latest
-          imagePullPolicy: IfNotPresent
+          image: boualem775/serviceadmin:v1
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
+          env:
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: MONGO_URI
+            - name: PORT
+              value: "8080"
+
+            - name: CLOUDINARY_CLOUD_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: cloudinary-secret
+                  key: CLOUDINARY_CLOUD_NAME
+            - name: CLOUDINARY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cloudinary-secret
+                  key: CLOUDINARY_API_KEY
+            - name: CLOUDINARY_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: cloudinary-secret
+                  key: CLOUDINARY_API_SECRET
           resources: {}
       restartPolicy: Always
 ---
@@ -63,4 +131,4 @@ spec:
       name: http
   selector:
     app: serviceadmin
-  type: NodePort  
+  type: NodePort
